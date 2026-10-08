@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EuroJackpot Tracker</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#292929;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#222;
+}
+
+.wrap{
+  max-width:950px;
+  margin:20px auto;
+  padding:12px;
+}
+
+.app{
+  background:linear-gradient(145deg,#e9d65b,#f0b15d);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 14px 45px #0008;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:16px;
+}
+
+.logo{
+  font-weight:900;
+  font-size:30px;
+  line-height:.82;
+  letter-spacing:-1px;
+  text-shadow:2px 2px #fff7;
+}
+
+.logo span{
+  display:block;
+  font-size:20px;
+  letter-spacing:1px;
+}
+
+.badge{
+  background:#fff8c9;
+  border:1px solid #bda64e;
+  padding:9px 12px;
+  border-radius:9px;
+  font-weight:700;
+}
+
+.ticket{
+  background:#fff8e8;
+  border:2px solid #d6a74e;
+  border-radius:12px;
+  padding:15px;
+}
+
+.combo{
+  border-top:2px solid #d8ad48;
+  padding:14px 0;
+}
+
+.combo:first-child{
+  border-top:0;
+}
+
+.section-title{
+  font-weight:900;
+  color:#a84220;
+  margin-bottom:8px;
+  font-size:17px;
+}
+
+.grid-area{
+  display:grid;
+  grid-template-columns:1fr 155px;
+  gap:15px;
+  align-items:center;
+}
+
+.numbers{
+  display:grid;
+  grid-template-columns:repeat(10,1fr);
+  gap:5px;
+}
+
+.stars{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+}
+
+.num{
+  position:relative;
+  border:1px solid #bd9270;
+  background:#fffaf0;
+  min-height:36px;
+  border-radius:3px;
+  font-weight:700;
+  color:#9d765c;
+  cursor:pointer;
+  font-size:15px;
+}
+
+.num:hover{
+  background:#fff0c5;
+}
+
+.num.selected:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:29px;
+  height:4px;
+  background:#222;
+  transform:translate(-50%,-50%) rotate(-42deg);
+  border-radius:4px;
+  box-shadow:0 0 0 1px #2228;
+}
+
+.num.selected:before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:28px;
+  height:4px;
+  background:#222;
+  transform:translate(-50%,-50%) rotate(42deg);
+  border-radius:4px;
+  z-index:2;
+}
+
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:15px;
+}
+
+button{
+  border:0;
+  border-radius:9px;
+  padding:11px 15px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.primary{
+  background:#9f321d;
+  color:white;
+}
+
+.secondary{
+  background:#fff2bf;
+  color:#5b4516;
+}
+
+.blue{
+  background:#275f9e;
+  color:white;
+}
+
+.joker{
+  margin-top:17px;
+  background:#b74427;
+  color:white;
+  padding:14px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.joker-title{
+  font-size:20px;
+  font-weight:900;
+}
+
+.joker-number{
+  font-family:"Courier New",monospace;
+  background:white;
+  color:#111;
+  padding:8px 12px;
+  border-radius:4px;
+  font-size:23px;
+  letter-spacing:3px;
+  font-weight:700;
+}
+
+.schedule{
+  margin-top:15px;
+  padding:12px;
+  background:#fff4c9;
+  border:1px solid #d8bd5d;
+  border-radius:10px;
+  font-size:14px;
+}
+
+.resultBox{
+  margin-top:17px;
+  background:#fffdf4;
+  border-radius:11px;
+  padding:15px;
+  border:1px solid #d8bc6a;
+}
+
+.resultBox h2{
+  margin:0 0 12px;
+  font-size:19px;
+}
+
+.inputs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+input{
+  width:100%;
+  padding:11px;
+  border:1px solid #c7a968;
+  border-radius:8px;
+  font-size:16px;
+  background:white;
+}
+
+.draw-input{
+  margin-top:10px;
+}
+
+.draw-input label,
+.money label{
+  display:block;
+  font-weight:800;
+  margin-bottom:5px;
+}
+
+.draw-numbers{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:5px;
+  margin-top:7px;
+}
+
+.draw-stars{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:5px;
+  margin-top:7px;
+}
+
+.draw-number{
+  text-align:center;
+  padding:8px;
+  background:#eee;
+  border-radius:6px;
+  font-weight:bold;
+}
+
+.draw-number.hit{
+  background:#55b85a;
+  color:white;
+  box-shadow:0 0 0 2px #28772c;
+}
+
+.money{
+  margin-top:12px;
+}
+
+.stats{
+  margin-top:17px;
+  background:#fffdf4;
+  border-radius:11px;
+  padding:15px;
+  border:1px solid #d8bc6a;
+}
+
+.stats h2{
+  margin:0 0 10px;
+  font-size:19px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+}
+
+.card{
+  background:#f7edc8;
+  border-radius:8px;
+  padding:10px;
+  text-align:center;
+}
+
+.card b{
+  display:block;
+  font-size:21px;
+  margin-top:4px;
+}
+
+.profit-positive{
+  color:#16832b;
+}
+
+.profit-negative{
+  color:#b3261e;
+}
+
+.history{
+  margin-top:17px;
+  background:#fffdf4;
+  border-radius:11px;
+  padding:15px;
+  border:1px solid #d8bc6a;
+}
+
+.history h2{
+  margin-top:0;
+}
+
+.history-item{
+  background:#f7edc8;
+  border-radius:9px;
+  padding:12px;
+  margin-bottom:9px;
+  border-left:5px solid #a84220;
+}
+
+.history-item b{
+  color:#9f321d;
+}
+
+.empty{
+  opacity:.65;
+  text-align:center;
+  padding:15px;
+}
+
+.status{
+  margin-top:10px;
+  padding:10px;
+  background:#edf5e9;
+  border:1px solid #b8d0aa;
+  border-radius:8px;
+  display:none;
+}
+
+@media(max-width:680px){
+
+  .top{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .grid-area{
+    grid-template-columns:1fr;
+  }
+
+  .numbers{
+    gap:4px;
+  }
+
+  .num{
+    min-height:31px;
+    font-size:13px;
+  }
+
+  .cards{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .inputs{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<div class="app">
+
+<div class="top">
+  <div class="logo">
+    EURO
+    <span>JACKPOT</span>
+  </div>
+
+  <div class="badge">
+    STATISTIKA
+  </div>
+</div>
+
+<div class="ticket">
+
+<div id="combos"></div>
+
+<div class="controls">
+  <button class="primary" onclick="saveTicket()">
+    💾 Spremi listić
+  </button>
+
+  <button class="secondary" onclick="clearSelections()">
+    Očisti odabire
+  </button>
+
+  <button class="blue" onclick="newTicket()">
+    ↻ Novi listić
+  </button>
+</div>
+
+<div class="joker">
+
+  <div class="joker-title">
+    JOKER
+  </div>
+
+  <div class="joker-number" id="jokerNumber">
+    000000
+  </div>
+
+  <div>
+    Petak i utorak u 19:00
+  </div>
+
+</div>
+
+<div class="schedule">
+
+<b>Raspored izvlačenja</b><br>
+🎲 Joker: utorak i petak — 19:00<br>
+🎯 EuroJackpot: utorak i petak — 20:00<br>
+Rezultate upisuješ ručno nakon izvlačenja.
+</div>
+
+</div>
+
+
+<!-- REZULTAT -->
+
+<div class="resultBox">
+
+<h2>🎯 Rezultat izvlačenja</h2>
+
+<div class="draw-input">
+
+<label>Glavni brojevi</label>
+
+<div class="draw-numbers">
+
+<input id="draw1" type="number" min="1" max="50" placeholder="1">
+<input id="draw2" type="number" min="1" max="50" placeholder="2">
+<input id="draw3" type="number" min="1" max="50" placeholder="3">
+<input id="draw4" type="number" min="1" max="50" placeholder="4">
+<input id="draw5" type="number" min="1" max="50" placeholder="5">
+
+</div>
+
+</div>
+
+<div class="draw-input">
+
+<label>Euro brojevi</label>
+
+<div class="draw-stars">
+
+<input id="star1" type="number" min="1" max="12" placeholder="1">
+<input id="star2" type="number" min="1" max="12" placeholder="2">
+
+</div>
+
+</div>
+
+<div class="draw-input">
+
+<label>Joker rezultat</label>
+
+<input id="resultJoker"
+       maxlength="6"
+       placeholder="000000"
+       oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)">
+
+</div>
+
+<div class="money">
+
+<label>Ukupno dobiveno (€)</label>
+
+<input id="wonAmount"
+       type="number"
+       min="0"
+       step="0.01"
+       placeholder="0.00">
+
+</div>
+
+<div class="controls">
+
+<button class="primary" onclick="checkResult()">
+  Provjeri listić
+</button>
+
+</div>
+
+<div class="status" id="resultStatus"></div>
+
+</div>
+
+
+<!-- STATISTIKA -->
+
+<div class="stats">
+
+<h2>📊 Ukupna statistika</h2>
+
+<div class="cards">
+
+<div class="card">
+  Ukupno listića
+  <b id="totalTickets">0</b>
+</div>
+
+<div class="card">
+  Potrošeno
+  <b id="totalSpent">0,00 €</b>
+</div>
+
+<div class="card">
+  Dobiveno
+  <b id="totalWon">0,00 €</b>
+</div>
+
+<div class="card">
+  Total profit
+  <b id="totalProfit">0,00 €</b>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- POVIJEST -->
+
+<div class="history">
+
+<h2>📜 Povijest</h2>
+
+<div id="historyList">
+  <div class="empty">
+    Još nema spremljenih rezultata.
+  </div>
+</div>
+
+<div class="controls">
+
+<button class="secondary" onclick="clearHistory()">
+  Obriši povijest
+</button>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+<script>
+
+/* =========================
+   LOCAL STORAGE
+========================= */
+
+const STORAGE_KEY = "eurojackpot_tracker_v2";
+
+let data = JSON.parse(
+  localStorage.getItem(STORAGE_KEY)
+) || {
+
+  currentTicket:null,
+
+  history:[],
+
+  totalSpent:0,
+
+  totalWon:0
+};
+
+
+/* =========================
+   POMOĆNE FUNKCIJE
+========================= */
+
+function saveData(){
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(data)
+  );
+
+}
+
+function randomNumber(max){
+
+  return Math.floor(
+    Math.random()*max
+  )+1;
+
+}
+
+function uniqueNumbers(count,max){
+
+  const numbers = new Set();
+
+  while(numbers.size < count){
+
+    numbers.add(
+      randomNumber(max)
+    );
+
+  }
+
+  return [...numbers].sort(
+    (a,b)=>a-b
+  );
+
+}
+
+
+/* =========================
+   JOKER
+========================= */
+
+function generateJoker(){
+
+  return String(
+    Math.floor(
+      Math.random()*1000000
+    )
+  ).padStart(6,"0");
+
+}
+
+
+/* =========================
+   KREIRANJE KOMBINACIJA
+========================= */
+
+function createCombo(index){
+
+  const wrap =
+    document.createElement("section");
+
+  wrap.className="combo";
+
+  wrap.innerHTML=`
+
+    <div class="section-title">
+      KOMBINACIJA ${index}
+    </div>
+
+    <div class="grid-area">
+
+      <div class="numbers main"></div>
+
+      <div class="stars euro"></div>
+
+    </div>
+
+  `;
+
+  const main =
+    wrap.querySelector(".main");
+
+  const euro =
+    wrap.querySelector(".euro");
+
+
+  /* 1-50 */
+
+  for(let n=1;n<=50;n++){
+
+    const button =
+      document.createElement("button");
+
+    button.className="num";
+
+    button.textContent=n;
+
+    button.dataset.number=n;
+
+    button.type="button";
+
+    button.onclick=()=>{
+
+      const selected =
+        main.querySelectorAll(
+          ".selected"
+        ).length;
+
+      if(
+        !button.classList.contains("selected")
+        &&
+        selected>=5
+      ){
+
+        return;
+
+      }
+
+      button.classList.toggle(
+        "selected"
+      );
+
+    };
+
+    main.appendChild(button);
+
+  }
+
+
+  /* 1-12 */
+
+  for(let n=1;n<=12;n++){
+
+    const button =
+      document.createElement("button");
+
+    button.className="num";
+
+    button.textContent=n;
+
+    button.dataset.number=n;
+
+    button.type="button";
+
+    button.onclick=()=>{
+
+      const selected =
+        euro.querySelectorAll(
+          ".selected"
+        ).length;
+
+      if(
+        !button.classList.contains("selected")
+        &&
+        selected>=2
+      ){
+
+        return;
+
+      }
+
+      button.classList.toggle(
+        "selected"
+      );
+
+    };
+
+    euro.appendChild(button);
+
+  }
+
+
+  document
+    .getElementById("combos")
+    .appendChild(wrap);
+
+}
+
+
+/* =========================
+   NOVI LISTIĆ
+========================= */
+
+function newTicket(){
+
+  const ticket={
+
+    id:Date.now(),
+
+    created:new Date().toLocaleString(
+      "hr-HR"
+    ),
+
+    joker:generateJoker(),
+
+    combinations:[]
+
+  };
+
+
+  for(let i=0;i<3;i++){
+
+    ticket.combinations.push({
+
+      main:[],
+      euro:[]
+
+    });
+
+  }
+
+
+  data.currentTicket=ticket;
+
+  saveData();
+
+  renderTicket();
+
+}
+
+
+/* =========================
+   PRIKAZ LISTIĆA
+========================= */
+
+function renderTicket(){
+
+  const root =
+    document.getElementById(
+      "combos"
+    );
+
+  root.innerHTML="";
+
+
+  if(!data.currentTicket){
+
+    newTicket();
+
+    return;
+
+  }
+
+
+  for(
+    let i=1;
+    i<=data.currentTicket.combinations.length;
+    i++
+  ){
+
+    createCombo(i);
+
+  }
+
+
+  const combinations =
+    data.currentTicket.combinations;
+
+
+  combinations.forEach(
+    (combo,index)=>{
+
+      const section =
+        root.children[index];
+
+      combo.main.forEach(
+        n=>{
+
+          const button =
+            section.querySelector(
+              `.main .num[data-number="${n}"]`
+            );
+
+          if(button)
+            button.classList.add(
+              "selected"
+            );
+
+        }
+      );
+
+
+      combo.euro.forEach(
+        n=>{
+
+          const button =
+            section.querySelector(
+              `.euro .num[data-number="${n}"]`
+            );
+
+          if(button)
+            button.classList.add(
+              "selected"
+            );
+
+        }
+      );
+
+    }
+  );
+
+
+  document.getElementById(
+    "jokerNumber"
+  ).textContent =
+    data.currentTicket.joker;
+
+}
+
+
+/* =========================
+   SPREMI LISTIĆ
+========================= */
+
+function saveTicket(){
+
+  const sections =
+    document.querySelectorAll(
+      ".combo"
+    );
+
+  const combinations=[];
+
+  let valid=true;
+
+
+  sections.forEach(
+    section=>{
+
+      const main =
+        [...section.querySelectorAll(
+          ".main .selected"
+        )].map(
+          x=>Number(x.dataset.number)
+        );
+
+      const euro =
+        [...section.querySelectorAll(
+          ".euro .selected"
+        )].map(
+          x=>Number(x.dataset.number)
+        );
+
+
+      if(
+        main.length!==5 ||
+        euro.length!==2
+      ){
+
+        valid=false;
+
+      }
+
+
+      combinations.push({
+        main,
+        euro
+      });
+
+    }
+  );
+
+
+  if(!valid){
+
+    alert(
+      "Svaka kombinacija mora imati 5 glavnih i 2 Euro broja."
+    );
+
+    return;
+
+  }
+
+
+  data.currentTicket.combinations =
+    combinations;
+
+
+  saveData();
+
+
+  showStatus(
+    "Listić je spremljen. Podaci ostaju spremljeni i nakon refreshanja stranice.",
+    false
+  );
+
+}
+
+
+/* =========================
+   ČIŠĆENJE
+========================= */
+
+function clearSelections(){
+
+  document
+    .querySelectorAll(".selected")
+    .forEach(
+      x=>x.classList.remove(
+        "selected"
+      )
+    );
+
+}
+
+
+/* =========================
+   PROVJERA REZULTATA
+========================= */
+
+function checkResult(){
+
+  if(!data.currentTicket){
+
+    alert("Nema aktivnog listića.");
+
+    return;
+
+  }
+
+
+  saveTicketSilently();
+
+
+  const drawnMain=[
+    Number(document.getElementById("draw1").value),
+    Number(document.getElementById("draw2").value),
+    Number(document.getElementById("draw3").value),
+    Number(document.getElementById("draw4").value),
+    Number(document.getElementById("draw5").value)
+  ];
+
+
+  const drawnEuro=[
+    Number(document.getElementById("star1").value),
+    Number(document.getElementById("star2").value)
+  ];
+
+
+  if(
+    drawnMain.some(
+      n=>!n || n<1 || n>50
+    )
+    ||
+    drawnEuro.some(
+      n=>!n || n<1 || n>12
+    )
+  ){
+
+    alert(
+      "Upiši svih 5 glavnih i 2 Euro broja."
+    );
+
+    return;
+
+  }
+
+
+  const joker =
+    document.getElementById(
+      "resultJoker"
+    ).value.padStart(6,"0");
+
+
+  const won =
+    Number(
+      document.getElementById(
+        "wonAmount"
+      ).value
+    ) || 0;
+
+
+  let bestMain=0;
+  let bestEuro=0;
+  let bestCombination=0;
+
+
+  data.currentTicket.combinations
+    .forEach(
+      combo=>{
+
+        const mainHits =
+          combo.main.filter(
+            n=>drawnMain.includes(n)
+          ).length;
+
+        const euroHits =
+          combo.euro.filter(
+            n=>drawnEuro.includes(n)
+          ).length;
+
+
+        if(
+          mainHits+euroHits
+          >
+          bestMain+bestEuro
+        ){
+
+          bestMain=mainHits;
+          bestEuro=euroHits;
+          bestCombination=
+            mainHits+euroHits;
+
+        }
+
+      }
+    );
+
+
+  /* svaka kombinacija 2 € */
+
+  const ticketCost =
+    data.currentTicket.combinations.length
+    *2;
+
+
+  data.totalSpent +=
+    ticketCost;
+
+
+  data.totalWon +=
+    won;
+
+
+  data.history.unshift({
+
+    date:new Date().toLocaleString(
+      "hr-HR"
+    ),
+
+    combinations:
+      JSON.parse(
+        JSON.stringify(
+          data.currentTicket.combinations
+        )
+      ),
+
+    joker:data.currentTicket.joker,
+
+    drawnMain,
+
+    drawnEuro,
+
+    drawnJoker:joker,
+
+    won,
+
+    spent:ticketCost,
+
+    best:
+      `${bestMain}+${bestEuro}`
+
+  });
+
+
+  saveData();
+
+  renderStats();
+
+  renderHistory();
+
+
+  /* označavanje pogođenih brojeva */
+
+  highlightHits(
+    drawnMain,
+    drawnEuro
+  );
+
+
+  showStatus(
+
+    `Najbolji pogodak: ${bestMain}+${bestEuro}. ` +
+    `Upisani dobitak: ${formatEuro(won)}.`,
+
+    false
+
+  );
+
+
+  /* nakon obrade kreiraj novi prazan listić */
+
+  data.currentTicket=null;
+
+  saveData();
+
+}
+
+
+/* =========================
+   SPREMANJE BEZ PORUKE
+========================= */
+
+function saveTicketSilently(){
+
+  const sections =
+    document.querySelectorAll(
+      ".combo"
+    );
+
+  const combinations=[];
+
+
+  sections.forEach(
+    section=>{
+
+      combinations.push({
+
+        main:[
+          ...section.querySelectorAll(
+            ".main .selected"
+          )
+        ].map(
+          x=>Number(
+            x.dataset.number
+          )
+        ),
+
+        euro:[
+          ...section.querySelectorAll(
+            ".euro .selected"
+          )
+        ].map(
+          x=>Number(
+            x.dataset.number
+          )
+        )
+
+      });
+
+    }
+  );
+
+
+  data.currentTicket.combinations =
+    combinations;
+
+
+  saveData();
+
+}
+
+
+/* =========================
+   POGOĐENI BROJEVI
+========================= */
+
+function highlightHits(
+  main,
+  euro
+){
+
+  document
+    .querySelectorAll(
+      ".combo"
+    )
+    .forEach(
+      section=>{
+
+        section
+          .querySelectorAll(
+            ".main .num"
+          )
+          .forEach(
+            button=>{
+
+              if(
+                main.includes(
+                  Number(
+                    button.dataset.number
+                  )
+                )
+              ){
+
+                button.style.background=
+                  "#55b85a";
+
+                button.style.color=
+                  "white";
+
+              }
+
+            }
+          );
+
+
+        section
+          .querySelectorAll(
+            ".euro .num"
+          )
+          .forEach(
+            button=>{
+
+              if(
+                euro.includes(
+                  Number(
+                    button.dataset.number
+                  )
+                )
+              ){
+
+                button.style.background=
+                  "#55b85a";
+
+                button.style.color=
+                  "white";
+
+              }
+
+            }
+          );
+
+      }
+    );
+
+}
+
+
+/* =========================
+   FORMAT NOVCA
+========================= */
+
+function formatEuro(value){
+
+  return Number(value)
+    .toFixed(2)
+    .replace(".",",")
+    +" €";
+
+}
+
+
+/* =========================
+   STATISTIKA
+========================= */
+
+function renderStats(){
+
+  const tickets =
+    data.history.length;
+
+
+  document.getElementById(
+    "totalTickets"
+  ).textContent=tickets;
+
+
+  document.getElementById(
+    "totalSpent"
+  ).textContent=
+    formatEuro(
+      data.totalSpent
+    );
+
+
+  document.getElementById(
+    "totalWon"
+  ).textContent=
+    formatEuro(
+      data.totalWon
+    );
+
+
+  const profit =
+    data.totalWon -
+    data.totalSpent;
+
+
+  const profitEl =
+    document.getElementById(
+      "totalProfit"
+    );
+
+
+  profitEl.textContent=
+    formatEuro(profit);
+
+
+  profitEl.className="";
+
+
+  if(profit>0){
+
+    profitEl.classList.add(
+      "profit-positive"
+    );
+
+  }
+
+  if(profit<0){
+
+    profitEl.classList.add(
+      "profit-negative"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   POVIJEST
+========================= */
+
+function renderHistory(){
+
+  const root =
+    document.getElementById(
+      "historyList"
+    );
+
+
+  if(!data.history.length){
+
+    root.innerHTML=
+      `<div class="empty">
+        Još nema spremljenih rezultata.
+       </div>`;
+
+    return;
+
+  }
+
+
+  root.innerHTML="";
+
+
+  data.history.forEach(
+    item=>{
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.className=
+        "history-item";
+
+
+      div.innerHTML=`
+
+        <b>${item.date}</b><br>
+
+        🎯 Izvučeno:
+        ${item.drawnMain.join(", ")}
+        +
+        ${item.drawnEuro.join(", ")}
+
+        <br>
+
+        📊 Najbolji pogodak:
+        <b>${item.best}</b>
+
+        <br>
+
+        💶 Potrošeno:
+        ${formatEuro(item.spent)}
+
+        <br>
+
+        🏆 Dobiveno:
+        ${formatEuro(item.won)}
+
+        <br>
+
+        🎲 Joker:
+        ${item.drawnJoker}
+
+      `;
+
+
+      root.appendChild(div);
+
+    }
+  );
+
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function showStatus(
+  text,
+  error
+){
+
+  const box =
+    document.getElementById(
+      "resultStatus"
+    );
+
+
+  box.style.display="block";
+
+  box.style.background =
+    error
+      ? "#ffe7e7"
+      : "#edf5e9";
+
+  box.style.borderColor =
+    error
+      ? "#d99"
+      : "#b8d0aa";
+
+
+  box.textContent=text;
+
+}
+
+
+/* =========================
+   OBRIŠI POVIJEST
+========================= */
+
+function clearHistory(){
+
+  if(
+    !confirm(
+      "Želiš li stvarno obrisati cijelu povijest i statistiku?"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  data.history=[];
+
+  data.totalSpent=0;
+
+  data.totalWon=0;
+
+  saveData();
+
+  renderStats();
+
+  renderHistory();
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+if(!data.currentTicket){
+
+  newTicket();
+
+}else{
+
+  renderTicket();
+
+}
+
+renderStats();
+
+renderHistory();
+
+</script>
+
+</body>
+</html>
